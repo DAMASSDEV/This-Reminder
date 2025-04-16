@@ -96,7 +96,7 @@ Proyek ini menggunakan lisensi MIT – Silakan gunakan dan modifikasi sesuai keb
 - cd.. => for out or leave in directory
 - ls / dir => untuk melihat apa saja yang ada di dalam folder ini
 - md / mkdir => untuk membuat folder
-- cd *_ / _*/ *_* => agar mempercepat penulisan untuk masuk directory atau folder
+- cd "*"_ / _"*"/ "*"_"*" => agar mempercepat penulisan untuk masuk directory atau folder
 - start . => untuk membuka ekspolrer atau library
 - code . => untuk membuka vscode langsung
 - rm ___ => untuk menghapus file atau folder bisa
