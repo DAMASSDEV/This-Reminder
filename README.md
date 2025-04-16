@@ -79,7 +79,7 @@ Proyek ini menggunakan lisensi MIT – Silakan gunakan dan modifikasi sesuai keb
 - git status
 - git add .
 - git commit -m " "
-- git remote origin (file path)
+- git remote origin (file path/folder di library)
 - git push -u origin main
 
 ---
@@ -88,5 +88,40 @@ Proyek ini menggunakan lisensi MIT – Silakan gunakan dan modifikasi sesuai keb
 - npm install
 - npm run dev
 - npm build
+
+---
+# Command For Power Shell Yang sering dipake danar
+- ni index.html => for making new file anything
+- cd  ___ => for in directory
+- cd.. => for out or leave in directory
+- ls / dir => untuk melihat apa saja yang ada di dalam folder ini
+- md / mkdir => untuk membuat folder
+- cd *_ / _*/ *_* => agar mempercepat penulisan untuk masuk directory atau folder
+- start . => untuk membuka ekspolrer atau library
+- code . => untuk membuka vscode langsung
+- rm ___ => untuk menghapus file atau folder bisa
+- cls => Clear screeen agar hilang 
+- "Isi file ini" > file.txt => isi file lansung
+- cat ____ => melihat isi file aja
+- cp ___  ___ => untuk copy file aja
+- cp -Recurse ___ ___ => untuk copy folder aja
+- Get-ChildItem -Recurse -Filter *.html  => Untuk mencari semua file yang ada di semua folder j
+- Get-ComputerInfo  => Spesifikasi Laptop kita terlihat
+- Get-date => mendapatkan waktu secara real-time atau waktu sekarang
+- Test-Connection google.com => Cek Koneksi Laptop atau internet di website google
+- Get-Process | Where-Object { $_.CPU -gt 10 } => Melihat proses cpu
+- Get-Process => melihat proses yang sedang berjalan
+- Get-PSDrive => penggunaan disk di cek penuh apa kaga
+- Stop-Computer => Untuk shutdown Laptop
+- Restart-Computer => Untuk restart Laptop
+- Expand-Archive -Path "file.zip" -DestinationPath "folderTujuan" => Untuk Konvert ke ZIP FILE
+- Get-Process | Out-File "proses.txt" => Untuk Menyimpan atau safe file
+- cipher /e file.txt => Untuk enkripsi File (buat keamanann file)
+- cipher /d file.txt => Untuk dekrip file nya
+- Start-Sleep -Seconds 5 => Untuk sleep Laptop
+- (Invoke-RestMethod ifconfig.me/ip).Content => ambil alamat ip publik
+- 
+
+
 
 
