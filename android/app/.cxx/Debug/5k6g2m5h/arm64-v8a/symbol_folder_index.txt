@@ -1,0 +1,1 @@
+E:\Programming\Flutter\smart_fan\build\app\intermediates\cxx\Debug\5k6g2m5h\obj\arm64-v8a
