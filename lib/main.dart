@@ -73,6 +73,18 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+// Fungsi untuk menyimpan data saat login
+void saveLoginData(String username, String password) {
+  bool isConnected = true; // Asumsi koneksi berhasil
+  saveData(username, password, isConnected);
+}
+
+// Fungsi untuk memuat data saat aplikasi dimulai
+void checkLoginStatus() {
+  loadData();
+}
+
+
 class MqttControlPage extends StatefulWidget {
   final void Function(bool) onThemeChanged;
   final ThemeMode themeMode;
@@ -320,7 +332,21 @@ void _toggleFanAnimation() {
             ],
           ),
           actions: [
+ 
             TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Close',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontFamily: "JetBrains Mono",
+                  fontSize: 15,
+                  color: isDark
+                      ? Colors.white
+                      : Colors.black, // Adjust button text color
+                ),
+              ),
+            ),
+                       TextButton(
               onPressed: () {
                 setState(() {
                   mqttHost = hostController.text;
@@ -339,29 +365,10 @@ void _toggleFanAnimation() {
                   const SnackBar(
                       content: Text('Configuration saved successfully')),
                 );
-                if (!isConnected) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("Tidak terhubung ke server MQTT")),
-  );
-  return;
-}
 
               },
               child: Text(
                 'Save',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontFamily: "JetBrains Mono",
-                  fontSize: 15,
-                  color: isDark
-                      ? Colors.white
-                      : Colors.black, // Adjust button text color
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Close',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontFamily: "JetBrains Mono",
                   fontSize: 15,
