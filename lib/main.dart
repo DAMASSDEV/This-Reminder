@@ -1,30 +1,14 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:logging/logging.dart';
-
+import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> saveData(String username, String password, bool isConnected) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('username', username);
-  await prefs.setString('password', password);
-  await prefs.setBool('isConnected', isConnected);
-}
 
-Future<void> loadData() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? username = prefs.getString('username');
-  String? password = prefs.getString('password');
-  bool isConnected = prefs.getBool('isConnected') ?? false;
 
-  // Cek apakah data ada dan coba untuk terhubung kembali ke server
-  if (username != null && password != null && isConnected) {
-    // Logika untuk mencoba kembali koneksi menggunakan username dan password
-    // Misalnya, koneksi ke server dengan kredensial yang telah disimpan
-  }
-}
+
+
 
 
 void main() => runApp(const MyApp());
@@ -73,17 +57,6 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-// Fungsi untuk menyimpan data saat login
-void saveLoginData(String username, String password) {
-  bool isConnected = true; // Asumsi koneksi berhasil
-  saveData(username, password, isConnected);
-}
-
-// Fungsi untuk memuat data saat aplikasi dimulai
-void checkLoginStatus() {
-  loadData();
-}
-
 
 class MqttControlPage extends StatefulWidget {
   final void Function(bool) onThemeChanged;
@@ -124,8 +97,25 @@ class _MqttControlPageState extends State<MqttControlPage>
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 5))
           ..repeat();
+        _loadSettings();
     _connect();
   }
+  Future<void> _loadSettings() async {
+  final prefs = await SharedPreferences.getInstance();
+  setState(() {
+    mqttHost = prefs.getString('mqttHost') ?? 'example.com';
+    mqttUser = prefs.getString('mqttUser') ?? 'user';
+    mqttPassword = prefs.getString('mqttPassword') ?? 'pass';
+  });
+}
+
+Future<void> _saveSettings() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('mqttHost', mqttHost);
+  await prefs.setString('mqttUser', mqttUser);
+  await prefs.setString('mqttPassword', mqttPassword);
+}
+
 
   @override
   void dispose() {
@@ -135,6 +125,7 @@ class _MqttControlPageState extends State<MqttControlPage>
   }
 
   void _connect() async {
+    client.server = mqttHost;
     client.port = 1883;
     client.keepAlivePeriod = 20;
     client.logging(on: false);
@@ -189,6 +180,10 @@ class _MqttControlPageState extends State<MqttControlPage>
   }
 
   void _publish(String message) {
+      if (client.connectionStatus?.state != MqttConnectionState.connected) {
+    _logger.warning('MQTT not connected!');
+    return;
+  }
     final builder = MqttClientPayloadBuilder();
     builder.addString(message);
     client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
@@ -353,6 +348,8 @@ void _toggleFanAnimation() {
                   mqttUser = userController.text;
                   mqttPassword = passController.text;
                 });
+
+                _saveSettings();
 
                 // Putuskan koneksi lama sebelum menghubungkan kembali dengan kredensial baru
                 client.disconnect();
