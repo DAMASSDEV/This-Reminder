@@ -4,6 +4,29 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:logging/logging.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
+Future<void> saveData(String username, String password, bool isConnected) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('username', username);
+  await prefs.setString('password', password);
+  await prefs.setBool('isConnected', isConnected);
+}
+
+Future<void> loadData() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? username = prefs.getString('username');
+  String? password = prefs.getString('password');
+  bool isConnected = prefs.getBool('isConnected') ?? false;
+
+  // Cek apakah data ada dan coba untuk terhubung kembali ke server
+  if (username != null && password != null && isConnected) {
+    // Logika untuk mencoba kembali koneksi menggunakan username dan password
+    // Misalnya, koneksi ke server dengan kredensial yang telah disimpan
+  }
+}
+
+
 void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
@@ -72,6 +95,7 @@ class _MqttControlPageState extends State<MqttControlPage>
 
   bool isPowerOn = false;
   bool isFanAnimationOn = false; // Tambahkan status animasi kipas
+  bool isConnected = true;
   String speedStatus = "0";
   String connectStatus = "Connecting...";
   Color statusColor = Colors.orange;
@@ -104,6 +128,7 @@ class _MqttControlPageState extends State<MqttControlPage>
     client.logging(on: false);
     client.onDisconnected = () {
       setState(() {
+        isConnected = false;
         connectStatus = "Disconnected";
         statusColor = Colors.red;
       });
@@ -127,6 +152,7 @@ class _MqttControlPageState extends State<MqttControlPage>
       await client.connect();
       if (client.connectionStatus!.state == MqttConnectionState.connected) {
         setState(() {
+          isConnected = true;
           connectStatus = "Connected";
           statusColor = Colors.green;
         });
@@ -134,6 +160,7 @@ class _MqttControlPageState extends State<MqttControlPage>
         _logger.warning(
             'Connection failed with status: ${client.connectionStatus}');
         setState(() {
+          isConnected = false;
           connectStatus = "Connection Failed";
           statusColor = Colors.red;
         });
@@ -142,6 +169,7 @@ class _MqttControlPageState extends State<MqttControlPage>
       _logger.warning('Connection error: $e');
       client.disconnect();
       setState(() {
+        isConnected = false;
         connectStatus = "Disconnected";
         statusColor = Colors.red;
       });
@@ -167,30 +195,41 @@ class _MqttControlPageState extends State<MqttControlPage>
     }
   }
 
-  void _togglePower() {
-    setState(() {
-      isPowerOn = !isPowerOn;
-      if (isPowerOn) {
-        _publish("power/on");
-      } else {
-        _publish("power/off");
-        speedStatus = "0"; // Reset speed when turning off
-      }
-    });
-  }
+void _togglePower() {
+  if (!isConnected) return; // Tambahkan ini agar tidak bisa diklik jika tidak konek
 
-  void _setSpeed(String speed) {
-    setState(() {
-      speedStatus = speed;
-      _publish("speed/$speed");
-    });
-  }
+  setState(() {
+    isPowerOn = !isPowerOn;
+    if (isPowerOn) {
+      _publish("power/on");
+    } else {
+      _publish("power/off");
+      speedStatus = "0"; // Reset speed when turning off
+    }
+  });
+}
 
-  void _toggleFanAnimation() {
-    setState(() {
-      isFanAnimationOn = !isFanAnimationOn; // Ubah status animasi kipas
-    });
-  }
+
+void _setSpeed(String speed) {
+  if (!isConnected) return;
+
+  setState(() {
+    speedStatus = speed;
+    _publish("speed/$speed");
+  });
+}
+
+void _toggleFanAnimation() {
+  if (!isConnected) return;
+
+  setState(() {
+    isFanAnimationOn = !isFanAnimationOn;
+    String message = isFanAnimationOn ? "rotate/on" : "rotate/off";
+    _publish(message);
+  });
+}
+
+
 
   void _showSettingsDialog() {
     TextEditingController hostController =
@@ -300,6 +339,13 @@ class _MqttControlPageState extends State<MqttControlPage>
                   const SnackBar(
                       content: Text('Configuration saved successfully')),
                 );
+                if (!isConnected) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Tidak terhubung ke server MQTT")),
+  );
+  return;
+}
+
               },
               child: Text(
                 'Save',
