@@ -120,8 +120,10 @@ Proyek ini menggunakan lisensi MIT – Silakan gunakan dan modifikasi sesuai keb
 - cipher /d file.txt => Untuk dekrip file nya
 - Start-Sleep -Seconds 5 => Untuk sleep Laptop
 - (Invoke-RestMethod ifconfig.me/ip).Content => ambil alamat ip publik
-- 
 
+
+# CHROME SETTING PAKSA 
+chrome://flags/
 
 
 
